@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#120a1d">
+<title>Nosso Álbum — 15.04.2026</title>
+<style>
+:root{
+  --bg:#08050d; --paper:#fff8f1; --ink:#351b2c; --accent:#ff5fa2;
+  --accent2:#8d6bff; --gold:#ffd98a; --shadow:rgba(0,0,0,.48);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:#fff;font-family:Georgia,"Times New Roman",serif;overflow-x:hidden}
+body{background:
+ radial-gradient(circle at 15% 15%,rgba(255,95,162,.13),transparent 28%),
+ radial-gradient(circle at 85% 80%,rgba(141,107,255,.12),transparent 30%),
+ #08050d;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+#app{min-height:100vh;position:relative}
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;opacity:.55;animation:float linear infinite}
+@keyframes float{from{transform:translateY(110vh) scale(.5);opacity:0}15%{opacity:.7}85%{opacity:.6}to{transform:translateY(-10vh) scale(1.2);opacity:0}}
+
+.cover{
+ min-height:100vh;display:grid;place-items:center;padding:28px 18px;position:relative;z-index:2;
+ perspective:1400px;
+}
+.book-wrap{width:min(92vw,430px);height:min(142vw,650px);max-height:78vh;position:relative}
+.cover-book{
+ width:100%;height:100%;position:relative;transform-style:preserve-3d;
+ filter:drop-shadow(0 25px 30px rgba(0,0,0,.5));
+}
+.cover-front{
+ position:absolute;inset:0;border-radius:8px 18px 18px 8px;
+ background:
+ linear-gradient(135deg,rgba(255,255,255,.12),transparent 30%),
+ radial-gradient(circle at 25% 20%,rgba(255,255,255,.16),transparent 20%),
+ linear-gradient(145deg,#35152f,#120c24 55%,#2c1230);
+ border:2px solid rgba(255,217,138,.5);overflow:hidden;
+ box-shadow:inset -14px 0 25px rgba(0,0,0,.35),inset 0 0 0 7px rgba(255,255,255,.04);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;
+}
+.cover-front:before,.cover-front:after{content:"";position:absolute;inset:11px;border:1px solid rgba(255,217,138,.45);border-radius:5px 14px 14px 5px;pointer-events:none}
+.cover-front:after{inset:18px;border-color:rgba(255,95,162,.35)}
+.cover-glow{position:absolute;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(255,95,162,.3),transparent 70%);filter:blur(10px);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.25);opacity:.6}}
+.ribbon{position:absolute;top:25px;right:-4px;background:linear-gradient(90deg,#ffd98a,#ff9fc5,#9b87ff,#ffd98a);background-size:300% 100%;animation:rainbow 5s linear infinite;color:#291226;padding:7px 15px;font:bold 11px Arial;letter-spacing:2px;box-shadow:0 5px 15px #0008}
+@keyframes rainbow{to{background-position:300% 0}}
+.cover-front h1{font-size:clamp(34px,10vw,55px);line-height:.9;margin:25px 0 12px;position:relative;text-shadow:0 5px 25px #000}
+.cover-front .subtitle{font:12px Arial,sans-serif;letter-spacing:4px;text-transform:uppercase;color:#ffdce9}
+.cover-date{font-size:14px;color:#ffd98a;margin-top:20px;letter-spacing:2px}
+.heart-seal{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,217,138,.55);background:rgba(0,0,0,.16);font-size:40px;animation:heartbeat 1.8s ease-in-out infinite}
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.12)}28%{transform:scale(1)}42%{transform:scale(1.08)}}
+.open-btn{
+ margin-top:32px;border:0;border-radius:999px;padding:16px 34px;color:#2a1021;font-weight:bold;
+ background:linear-gradient(135deg,#ffd98a,#ff7fb5);box-shadow:0 10px 30px rgba(255,95,162,.3),inset 0 1px #fff8;
+ transition:.25s;position:relative;z-index:4
+}
+.open-btn:active{transform:scale(.95)}
+.cover-hint{font:11px Arial;color:#ffffff99;margin-top:13px}
+
+.album{display:none;min-height:100vh;position:relative;z-index:2;padding:14px 12px 28px}
+.album.active{display:block;animation:albumIn .8s ease}
+@keyframes albumIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:650px;margin:auto;padding:8px 2px 14px}
+.logo{font-size:15px;letter-spacing:1px;color:#ffd9e7}
+.icon-btn{width:40px;height:40px;border:1px solid #ffffff22;background:#ffffff0c;color:#fff;border-radius:50%;font-size:17px}
+.progress{height:4px;flex:1;background:#ffffff13;border-radius:9px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,#ff5fa2,#ffd98a,#8d6bff);transition:width .5s}
+
+.album-stage{width:min(100%,650px);margin:auto;perspective:1600px}
+.page{
+ display:none;position:relative;min-height:calc(100vh - 100px);border-radius:13px;
+ background:var(--paper);color:var(--ink);padding:18px 16px 100px;
+ box-shadow:0 22px 50px rgba(0,0,0,.55);
+ overflow:hidden;
+}
+.page.active{display:block;animation:pageEnter .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes pageEnter{from{opacity:0;transform:rotateY(var(--rot,8deg)) translateX(var(--x,28px))}to{opacity:1;transform:none}}
+.page:before{content:"";position:absolute;inset:8px;border:1px solid #c99778;border-radius:8px;pointer-events:none;opacity:.7}
+.page:after{
+ content:"";position:absolute;inset:-50%;background:conic-gradient(from 0deg,transparent 0 70%,rgba(255,95,162,.11),rgba(141,107,255,.12),transparent 83%);
+ animation:spin 14s linear infinite;pointer-events:none;z-index:0
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.page>*{position:relative;z-index:1}
+.month-tag{text-align:center;font:10px Arial,sans-serif;letter-spacing:3px;color:#9a5c78;text-transform:uppercase;margin-top:5px}
+.page h2{text-align:center;font-size:31px;margin:8px 0 4px;color:#3b1b2f}
+.page-date{text-align:center;font:12px Arial;color:#9a6d7e;margin-bottom:18px}
+.divider{display:flex;align-items:center;gap:10px;color:#b57c94;margin:8px 0 16px}
+.divider:before,.divider:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#c995a9,transparent)}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 2px 18px}
+.photo-card{position:relative}
+.photo-frame{
+ aspect-ratio:4/5;border-radius:7px;background:linear-gradient(135deg,#ead6df,#f9e9d8);
+ border:5px solid #fff;outline:1px solid #c89ab0;box-shadow:0 9px 18px #5b2a3b2b;
+ overflow:hidden;position:relative;transform:rotate(-1deg);transition:.3s
+}
+.photo-card:nth-child(2) .photo-frame{transform:rotate(1deg)}
+.photo-frame:hover{transform:rotate(0) translateY(-3px)}
+.photo-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.placeholder{width:100%;height:100%;display:grid;place-items:center;text-align:center;padding:12px;color:#a36b82;font:11px Arial;background:
+ radial-gradient(circle at 20% 20%,#fff8,transparent 28%),linear-gradient(145deg,#f4dce7,#f7ead9)}
+.placeholder span{display:block;font-size:27px;margin-bottom:5px}
+.photo-date{text-align:center;font:10px Arial;color:#95647b;margin-top:7px}
+.photo-actions{display:flex;justify-content:center;gap:4px;margin-top:5px}
+.mini{border:1px solid #d8b4c4;background:#fff8;color:#6e3d56;border-radius:20px;padding:5px 8px;font:9px Arial}
+.memory{
+ margin:10px 3px 18px;padding:18px 17px;border:1px solid #e0bdcb;border-radius:8px;
+ background:rgba(255,255,255,.54);box-shadow:inset 0 0 25px #fff8
+}
+.memory-title{font-size:17px;text-align:center;margin-bottom:10px;color:#6c3b54}
+.memory p{font-size:15px;line-height:1.75;margin:0;white-space:pre-wrap}
+.edit-area{display:none;width:100%;min-height:190px;border:1px dashed #c995a9;background:#fffaf7;border-radius:7px;padding:12px;color:#442236;line-height:1.6;resize:vertical}
+.editing .memory p{display:none}.editing .edit-area{display:block}
+.page-footer{position:absolute;left:0;right:0;bottom:18px;text-align:center;font:10px Arial;color:#9d7285;letter-spacing:2px}
+.nav{
+ position:fixed;left:0;right:0;bottom:0;z-index:10;padding:10px 14px 12px;
+ background:linear-gradient(transparent,rgba(8,5,13,.96) 28%);display:flex;justify-content:center;gap:10px;
+}
+.nav button{border:1px solid #ffffff25;background:#171020ee;color:#fff;border-radius:999px;padding:11px 17px;font:12px Arial;backdrop-filter:blur(10px)}
+.nav button.primary{background:linear-gradient(135deg,#ff5fa2,#8d6bff);border:0;font-weight:bold}
+.nav button:disabled{opacity:.3}
+.settings{
+ position:fixed;right:12px;bottom:76px;z-index:12;display:none;width:min(92vw,360px);
+ background:#171020f2;border:1px solid #ffffff1c;border-radius:15px;padding:15px;box-shadow:0 20px 50px #000b;backdrop-filter:blur(14px)
+}
+.settings.open{display:block;animation:pop .25s ease}
+@keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.settings h3{margin:0 0 12px;font-size:17px}
+.setting-row{display:flex;gap:8px;align-items:center;margin:8px 0}
+.setting-row button,.file-label{flex:1;padding:10px;border-radius:9px;border:1px solid #ffffff18;background:#ffffff0a;color:#fff;font:11px Arial;text-align:center}
+input[type=file]{display:none}
+.modal{position:fixed;inset:0;background:#000b;z-index:30;display:none;align-items:center;justify-content:center;padding:18px}
+.modal.open{display:flex}
+.modal-box{width:min(94vw,430px);background:#fff8f1;color:#351b2c;border-radius:15px;padding:18px;box-shadow:0 25px 70px #000}
+.modal-box h3{margin:0 0 12px}
+.modal-box label{display:block;font:11px Arial;color:#7e5267;margin-top:10px}
+.modal-box input,.modal-box textarea{width:100%;border:1px solid #d8b4c4;border-radius:8px;padding:10px;margin-top:5px;background:#fff}
+.modal-box textarea{min-height:120px;resize:vertical}
+.modal-actions{display:flex;gap:8px;margin-top:14px}
+.modal-actions button{flex:1;padding:11px;border:0;border-radius:8px}
+.save{background:#ff76ad;color:#2a1021;font-weight:bold}.cancel{background:#eadde2;color:#4b2c3d}
+.toast{position:fixed;top:15px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:50;background:#211329eF;border:1px solid #ffffff22;padding:10px 14px;border-radius:99px;font:11px Arial;opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.confetti{position:fixed;z-index:40;pointer-events:none;font-size:20px;animation:confetti 1.4s ease-out forwards}
+@keyframes confetti{to{transform:translate(var(--dx),var(--dy)) rotate(600deg);opacity:0}}
+@media(max-width:380px){
+ .page h2{font-size:27px}.page{padding:15px 12px 95px}.memory p{font-size:14px}
+}
+
+.close-book-overlay{
+ position:fixed;inset:0;z-index:60;display:none;pointer-events:none;
+ background:radial-gradient(circle at center,rgba(255,95,162,.12),rgba(5,3,9,.96) 70%);
+ perspective:1800px;align-items:center;justify-content:center
+}
+.close-book-overlay.closing{display:flex;animation:closeBg .95s ease forwards}
+.close-book{
+ width:min(88vw,430px);height:min(68vh,560px);position:relative;
+ transform-style:preserve-3d;animation:bookClose 1.05s cubic-bezier(.7,0,.2,1) forwards;
+}
+.close-cover{
+ position:absolute;inset:0;border-radius:7px 18px 18px 7px;
+ background:
+ radial-gradient(circle at 25% 20%,rgba(255,255,255,.16),transparent 20%),
+ linear-gradient(145deg,#35152f,#120c24 55%,#2c1230);
+ border:2px solid rgba(255,217,138,.6);
+ box-shadow:inset -14px 0 25px rgba(0,0,0,.4),0 30px 60px #000b;
+ display:flex;align-items:center;justify-content:center;
+}
+.close-cover:before,.close-cover:after{
+ content:"";position:absolute;border:1px solid rgba(255,217,138,.45);
+ border-radius:5px 14px 14px 5px;inset:12px
+}
+.close-cover:after{inset:20px;border-color:rgba(255,95,162,.35)}
+.close-heart{font-size:62px;text-shadow:0 0 35px #ff5fa2;animation:closeHeart .9s ease}
+.close-pages{
+ position:absolute;left:9px;right:8px;top:10px;bottom:10px;border-radius:5px 14px 14px 5px;
+ background:repeating-linear-gradient(0deg,#eee1d9 0 2px,#d3c2ba 2px 3px);
+ transform:translateZ(-13px);box-shadow:0 4px 15px #0007
+}
+@keyframes bookClose{
+ 0%{transform:rotateY(0deg) scale(1);opacity:1}
+ 48%{transform:rotateY(-82deg) scale(.96)}
+ 100%{transform:rotateY(-92deg) scale(.88);opacity:0}
+}
+@keyframes closeBg{0%{opacity:0}20%{opacity:1}100%{opacity:1}}
+@keyframes closeHeart{0%{transform:scale(1.5);opacity:0}50%{transform:scale(1);opacity:1}100%{transform:scale(.8);opacity:0}}
+.close-label{
+ position:absolute;bottom:-52px;left:0;right:0;text-align:center;
+ font:11px Arial;letter-spacing:4px;color:#ffd9e7;text-transform:uppercase
+}
+
+
+/* ===== Camada extra: livro vivo / folhas / cores ===== */
+:root{
+  --hue:0deg;
+  --page-accent:#ff6fae;
+}
+body:after{
+ content:"";position:fixed;inset:-30%;pointer-events:none;z-index:1;
+ background:conic-gradient(from 0deg,transparent 0 18%,rgba(255,95,162,.045),transparent 32%,rgba(141,107,255,.04),transparent 48%,rgba(255,217,138,.035),transparent 68%);
+ animation:ambientColor 16s linear infinite;
+ mix-blend-mode:screen
+}
+@keyframes ambientColor{to{transform:rotate(360deg)}}
+
+.page{
+ --page-rot:0deg;
+ border-top:3px solid transparent;
+ border-image:linear-gradient(90deg,#ff6fae,#ffd98a,#8d6bff,#6fffd4,#ff6fae) 1;
+ animation:pageGlow 6s ease-in-out infinite;
+}
+@keyframes pageGlow{
+ 0%,100%{box-shadow:0 22px 50px rgba(0,0,0,.55),0 0 0 rgba(255,95,162,0)}
+ 50%{box-shadow:0 22px 50px rgba(0,0,0,.55),0 0 28px rgba(255,95,162,.12)}
+}
+.page.active .photo-frame{animation:photoFloat 5s ease-in-out infinite}
+.page.active .photo-card:nth-child(2) .photo-frame{animation-delay:-2.5s}
+@keyframes photoFloat{50%{transform:translateY(-3px) rotate(-1deg)}}
+
+.page-corner{
+ position:absolute!important;z-index:2!important;width:54px;height:54px;
+ border:2px solid transparent;border-radius:50%;opacity:.75;
+ background:linear-gradient(var(--paper),var(--paper)) padding-box,
+ linear-gradient(135deg,#ff6fae,#ffd98a,#8d6bff) border-box;
+ box-shadow:0 0 18px rgba(255,95,162,.18);
+ animation:cornerSpin 8s linear infinite;
+}
+.corner-tl{top:17px;left:17px}.corner-br{right:17px;bottom:28px}
+@keyframes cornerSpin{to{transform:rotate(360deg)}}
+
+.turn-layer{
+ position:fixed;inset:0;z-index:45;display:none;pointer-events:none;
+ perspective:1800px;align-items:center;justify-content:center;
+}
+.turn-layer.active{display:flex}
+.turn-sheet{
+ position:absolute;width:min(92vw,650px);height:min(82vh,760px);
+ background:linear-gradient(105deg,#fff9f3,#ead9d1 72%,#c7a79d);
+ border-radius:4px 13px 13px 4px;
+ transform-origin:left center;
+ box-shadow:18px 0 30px rgba(0,0,0,.35),inset -8px 0 12px rgba(80,30,45,.12);
+ backface-visibility:hidden;
+}
+.turn-sheet:before{
+ content:"";position:absolute;inset:10px;border:1px solid #c79baa;border-radius:3px 10px 10px 3px;
+}
+.turn-layer.forward .turn-sheet{animation:turnForward .78s cubic-bezier(.7,0,.2,1) forwards}
+.turn-layer.backward .turn-sheet{transform-origin:right center;animation:turnBackward .78s cubic-bezier(.7,0,.2,1) forwards}
+@keyframes turnForward{
+ 0%{transform:rotateY(0);filter:brightness(1)}
+ 45%{transform:rotateY(-72deg) translateX(4%);filter:brightness(.78)}
+ 100%{transform:rotateY(-180deg);filter:brightness(.5);opacity:0}
+}
+@keyframes turnBackward{
+ 0%{transform:rotateY(-180deg);filter:brightness(.5)}
+ 45%{transform:rotateY(-72deg);filter:brightness(.82)}
+ 100%{transform:rotateY(0);filter:brightness(1);opacity:0}
+}
+.book-shadow{
+ position:absolute;width:min(78vw,500px);height:35px;border-radius:50%;
+ background:#0008;filter:blur(15px);bottom:7%;animation:shadowTurn .78s ease forwards
+}
+@keyframes shadowTurn{50%{transform:scaleX(.65);opacity:.35}}
+
+.interact-heart{
+ position:fixed;z-index:50;pointer-events:none;font-size:18px;
+ animation:heartFly 1.5s cubic-bezier(.15,.75,.35,1) forwards;
+ filter:drop-shadow(0 0 8px rgba(255,95,162,.65))
+}
+@keyframes heartFly{
+ 0%{transform:translate(-50%,-50%) scale(.4) rotate(0);opacity:0}
+ 15%{opacity:1}
+ 100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.25) rotate(var(--rot));opacity:0}
+}
+.spark{
+ position:fixed;width:5px;height:5px;border-radius:50%;background:#ffd98a;z-index:49;
+ pointer-events:none;box-shadow:0 0 12px #ffd98a;animation:spark .8s ease-out forwards
+}
+@keyframes spark{to{transform:translate(var(--sx),var(--sy)) scale(0);opacity:0}}
+
+.swipe-hint{
+ position:absolute!important;left:50%;bottom:61px;transform:translateX(-50%);
+ z-index:3!important;color:#8d6578;font:9px Arial;letter-spacing:2px;text-transform:uppercase;
+ opacity:.65;animation:hintPulse 2.5s ease-in-out infinite;pointer-events:none
+}
+@keyframes hintPulse{50%{opacity:.2;transform:translateX(-50%) translateX(5px)}}
+
+.music-pulse{animation:musicPulse 1.2s ease-in-out infinite}
+@keyframes musicPulse{50%{transform:scale(1.08);box-shadow:0 0 20px rgba(255,95,162,.35)}}
+
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="particles"></div>
+
+  <section class="cover" id="cover">
+    <div class="book-wrap">
+      <div class="cover-book" id="coverBook">
+        <div class="cover-front">
+          <div class="cover-glow"></div>
+          <div class="ribbon">NOSSA HISTÓRIA • 1 ANO</div>
+          <div class="heart-seal">♡</div>
+          <div class="subtitle">um álbum feito de momentos</div>
+          <h1>Eu &amp; Você</h1>
+          <div class="cover-date">15.04.2026 — 15.04.2027</div>
+          <button class="open-btn" id="openAlbum">ABRIR O ÁLBUM ✦</button>
+          <div class="cover-hint">toque para abrir nossa história</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="album" id="album">
+    <div class="topbar">
+      <button class="icon-btn" id="homeBtn" title="Capa">⌂</button>
+      <div class="logo">NOSSO ÁLBUM</div>
+      <div class="progress"><i id="progress"></i></div>
+      <div style="display:flex;gap:6px"><button class="icon-btn" id="closeAlbumBtn" title="Fechar álbum">📕</button><button class="icon-btn" id="settingsBtn" title="Personalizar">⚙</button></div>
+    </div>
+    <div class="album-stage" id="pages"></div>
+  </main>
+
+  <div class="nav" id="nav">
+    <button id="prev">‹ Anterior</button>
+    <button class="primary" id="next">Virar página ›</button>
+  </div>
+
+  <aside class="settings" id="settings">
+    <h3>✨ Personalizar álbum</h3>
+    <div class="setting-row">
+      <button id="editText">✎ Editar texto desta página</button>
+      <button id="addPhoto">＋ Adicionar foto</button>
+    </div>
+    <div class="setting-row">
+      <label class="file-label" for="audioFile">♫ Música ambiente</label>
+      <input id="audioFile" type="file" accept="audio/*">
+      <button id="clearData">↺ Restaurar textos</button>
+    </div>
+    <div class="setting-row">
+      <button id="exportData">⇩ Exportar dados</button>
+      <button id="closeSettings">Fechar</button>
+    </div>
+  </aside>
+
+  <div class="modal" id="photoModal">
+    <div class="modal-box">
+      <h3>📷 Adicionar uma memória</h3>
+      <label>Escolha a foto</label>
+      <input id="photoInput" type="file" accept="image/*" style="display:block">
+      <label>Data em que a foto foi tirada</label>
+      <input id="photoDate" type="date">
+      <label>Legenda (opcional)</label>
+      <input id="photoCaption" type="text" maxlength="80" placeholder="Um detalhe que você quer lembrar...">
+      <div class="modal-actions">
+        <button class="cancel" id="cancelPhoto">Cancelar</button>
+        <button class="save" id="savePhoto">Adicionar ♥</button>
+      </div>
+    </div>
+  </div>
+  <div class="close-book-overlay" id="closeOverlay">
+      <div class="close-book">
+        <div class="close-pages"></div>
+        <div class="close-cover"><div class="close-heart">♥</div></div>
+        <div class="close-label">fechando nossa história...</div>
+      </div>
+    </div>
+    <div class="turn-layer" id="turnLayer">
+      <div class="turn-sheet"></div><div class="book-shadow"></div>
+    </div>
+    <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const START = new Date(2026,3,15);
+const END = new Date(2027,3,15);
+const months = [
+ {date:new Date(2026,3,15),title:"Primeiro dia",tag:"15 de abril de 2026",text:"Quando oficializamos nosso namoro e eu comprei nossas alianças, eu tinha certeza do que queria para a minha vida. Sem dúvidas, você foi uma das escolhas mais certas que eu já fiz: a garota que hoje eu chamo de meu amor.Esse álbum é uma forma de guardarmos todas as lembranças e momentos incríveis que vivemos nesses meses juntos. Espero poder continuar completando cada página ao seu lado, criando ainda mais memórias para guardar.Meu amor, eu te amo muito! Obrigado por me fazer o garoto mais feliz do mundo até hoje. ❤️"},
+ {date:new Date(2026,4,15),title:"Primeiro mês",tag:"15 de maio de 2026",text:"No nosso primeiro mês juntos, não tiramos muitas fotos um com o outro kkk, mas, sem dúvidas, vivi momentos incríveis ao seu lado. Estávamos juntos, rindo, assistindo a filmes, conversando e contando coisas um para o outro. Aos poucos, estávamos nos conhecendo e evoluindo juntos.Cada abraço seu fazia eu me apaixonar ainda mais, e cada momento que vivi com você naquele mês só reforçou o quanto eu te amava e o quanto você era incrível, carinhosa e especial para mim. ❤️"},
+ {date:new Date(2026,5,15),title:"Segundo mês",tag:"15 de junho de 2026",text:"Dois meses juntos, meu amor, e sem dúvidas foi um dos meses mais movimentados das nossas vidas kkkkk. Foi final de semestre na faculdade, e eu sei o quanto você se dedicou e o quanto ficou agoniada e preocupada, mas eu sempre soube que você conseguiria.Você ainda me fez ir na Alvorada kkkkk, e foi muito bom estar com você no nosso boi, mesmo que não tenhamos ficado até o final. Depois, ficar sentado com você no sofá esperando a chuva passar foi outro momento que eu guardo com muito carinho. Confesso que eu nem queria ir embora naquele momento.Também fomos passear com sua irmã, vimos o movimento, as barraquinhas e, claro, eu levei um golpe na pulseira kkkkk. Mesmo assim, foi muito divertido, porque eu amo viver esses momentos ao seu lado.Obrigado, meu amor, por ser a única pessoa que conseguiu me tirar de casa nesses dias tão movimentados kkkkk. Eu amo cada momento que vivemos juntos e não me arrependo de nada. ❤️"},
+ {date:new Date(2026,6,15),title:"Terceiro mês",tag:"15 de julho de 2026",text:"Três meses juntos, né, meu amor? Quem diria kkkkk. Esse mês, sem dúvidas, foi muito importante para mim, principalmente porque tivemos a oportunidade de trabalhar juntos, atender muitas pessoas e, claro, comer bastante kkkkk.Também nos aventuramos com a Dona Rai e a Nati, sentimos cheiros diversos, passamos por várias situações e até pensamos em desistir naquele dia, mas no final conseguimos um barco para levar a gente. Foi uma experiência muito incrível, meu amor. Mesmo com todo o cansaço, tornamos aqueles dias de trabalho muito mais divertidos por estarmos juntos.Finalmente conseguimos finalizar nossos trabalhos, e eu nunca imaginei que passar por tantos dias cansativos pudesse ser tão especial e divertido ao seu lado kkkkk.Obrigado, meu amor, por também me ensinar tanto sobre fé e amor. Até fiz uma promessa e espero muito que dê tudo certo kkkkk. ❤️Eu te amo muito, e a cada dia que passa, tenho ainda mais certeza desse amor. ❤️"},
+ {date:new Date(2026,7,15),title:"Quarto mês",tag:"15 de agosto de 2026",text:"Quatro meses juntos, meu amor, e isso é só o começo. Espero de coração que possamos continuar juntos por muito e muito tempo. 🙏❤️Esse mês foi incrível, principalmente porque foi a primeira vez que você veio à minha casa. Pude te apresentar um pouco do meu mundo, o lugar onde eu vivo e onde passo boa parte dos meus dias kkkkk. Foi muito especial poder compartilhar isso com você.Também foi um mês bastante corrido, afinal, nossas aulas começaram e a rotina ficou ainda mais cheia. Mesmo assim, cada momento ao seu lado fez tudo valer a pena e só aumentou a certeza que tenho de que te amo cada dia mais.E, claro, esse também é o mês do seu aniversário, meu amor! Mais um motivo para tornar esse mês ainda mais especial e guardar cada lembrança com muito carinho. ❤️Que venham muitos outros meses, muitos momentos, risadas, aventuras e histórias para colocarmos nesse álbum. Eu te amo muito! ❤️"},
+ {date:new Date(2026,8,15),title:"Quinto mês",tag:"15 de setembro de 2026",text:""},
+ {date:new Date(2026,9,15),title:"Sexto mês",tag:"15 de outubro de 2026",text:""},
+ {date:new Date(2026,10,15),title:"Sétimo mês",tag:"15 de novembro de 2026",text:""},
+ {date:new Date(2026,11,15),title:"Oitavo mês",tag:"15 de dezembro de 2026",text:""},
+ {date:new Date(2027,0,15),title:"Nono mês",tag:"15 de janeiro de 2027",text:""},
+ {date:new Date(2027,1,15),title:"Décimo mês",tag:"15 de fevereiro de 2027",text:""},
+ {date:new Date(2027,2,15),title:"Décimo primeiro mês",tag:"15 de março de 2027",text:""},
+ {date:new Date(2027,3,15),title:"Um ano de nós",tag:"15 de abril de 2027",text:""}
+];
+
+const defaultPhotos = months.map(()=>[]);
+let data = JSON.parse(localStorage.getItem("albumDataV1") || "null") || {texts:{},photos:{}};
+let current=0;
+let audio=null;
+
+const $=s=>document.querySelector(s);
+const pagesEl=$("#pages");
+
+function save(){localStorage.setItem("albumDataV1",JSON.stringify(data))}
+function fmtDate(d){
+ return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"}).format(d);
+}
+function escapeHtml(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+function render(){
+ pagesEl.innerHTML="";
+ months.forEach((m,i)=>{
+   const p=document.createElement("section");
+   p.className="page"+(i===current?" active":"");
+   p.dataset.index=i;
+   const text=data.texts[i] ?? m.text;
+   const photos=(data.photos[i]||[]);
+   p.innerHTML=`
+    <div class="page-corner corner-tl"></div>
+    <div class="page-corner corner-br"></div>
+    <div class="swipe-hint">deslize para virar a página</div>
+    <div class="month-tag">${escapeHtml(m.tag)}</div>
+    <h2>${escapeHtml(m.title)}</h2>
+    <div class="page-date">${i===0?"Primeiro mês ♥":i===12?"Nosso primeiro ano ♥":"Mês "+(i+1)+" de 13"}</div>
+    <div class="divider">✦ ♡ ✦</div>
+    <div class="photos">${photoHtml(photos, i)}</div>
+    <div class="memory">
+      <div class="memory-title">✎ Carta deste mês</div>
+      <p>${escapeHtml(text)}</p>
+      <textarea class="edit-area">${escapeHtml(text)}</textarea>
+    </div>
+    <div class="page-footer">15.04.2026 · 15.04.2027 &nbsp; • &nbsp; ${i+1}/13</div>`;
+   pagesEl.appendChild(p);
+ });
+ updateUI();
+}
+function photoHtml(photos,i){
+ const slots=photos.length?photos:[null,null];
+ return slots.map((ph,j)=>`
+ <div class="photo-card">
+   <div class="photo-frame">
+    ${ph?`<img src="${ph.src}" alt="Memória ${j+1}"><button class="mini delete-photo" data-i="${i}" data-j="${j}" style="position:absolute;right:5px;top:5px;background:#0009;color:#fff;border-color:#fff5">×</button>`
+        :`<div class="placeholder"><div><span>♡</span>Toque em<br>“Adicionar foto”<br>para colocar uma memória</div></div>`}
+   </div>
+   <div class="photo-date">${ph?(ph.date?fmtDate(new Date(ph.date+"T12:00:00")):"Data não informada"):"Sua foto aqui"}</div>
+   ${ph&&ph.caption?`<div class="photo-date">“${escapeHtml(ph.caption)}”</div>`:""}
+ </div>`).join("");
+}
+function updateUI(){
+ document.querySelectorAll(".page").forEach((p,i)=>p.classList.toggle("active",i===current));
+ $("#prev").disabled=current===0;
+ $("#next").disabled=current===months.length-1;
+ $("#next").textContent=current===months.length-1?"Fim ♥":"Próxima página ›";
+ $("#progress").style.width=((current+1)/months.length*100)+"%";
+}
+function go(n){
+ if(n<0||n>=months.length)return;
+ const direction=n>current?"forward":"backward";
+ const layer=$("#turnLayer");
+ layer.className="turn-layer "+direction;
+ // Deixa a folha passar por cima antes de revelar a nova página.
+ setTimeout(()=>{
+   current=n;
+   render();
+   window.scrollTo({top:0,behavior:"smooth"});
+ },300);
+ setTimeout(()=>{layer.className="turn-layer"},820);
+ if(n===months.length-1) burst();
+}
+function burst(){
+ for(let i=0;i<22;i++){
+  const e=document.createElement("div");e.className="confetti";e.textContent=["♥","✦","♡","✧"][Math.floor(Math.random()*4)];
+  e.style.left=(45+Math.random()*10)+"vw";e.style.top="45vh";
+  e.style.setProperty("--dx",(Math.random()*240-120)+"px");e.style.setProperty("--dy",(Math.random()*-280-40)+"px");
+  document.body.appendChild(e);setTimeout(()=>e.remove(),1500);
+ }
+}
+function toast(t){
+ const x=$("#toast");x.textContent=t;x.classList.add("show");clearTimeout(window._toast);
+ window._toast=setTimeout(()=>x.classList.remove("show"),2200);
+}
+function particles(){
+ const wrap=$("#particles");
+ for(let i=0;i<35;i++){
+  const p=document.createElement("i");p.className="particle";
+  p.style.left=Math.random()*100+"%";p.style.animationDuration=(7+Math.random()*13)+"s";
+  p.style.animationDelay=(-Math.random()*15)+"s";p.style.opacity=.15+Math.random()*.55;
+  p.style.transform=`scale(${.5+Math.random()*1.5})`;wrap.appendChild(p);
+ }
+}
+
+function closeAlbum(){
+ const overlay=$("#closeOverlay");
+ overlay.classList.add("closing");
+ setTimeout(()=>{
+   $("#album").classList.remove("active");
+   $("#nav").style.display="none";
+   $("#settings").classList.remove("open");
+   $("#cover").style.display="grid";
+   $("#cover").style.opacity="0";
+   $("#cover").style.transform="scale(.94) rotateX(8deg)";
+   overlay.classList.remove("closing");
+   setTimeout(()=>{
+     $("#cover").style.opacity="1";
+     $("#cover").style.transform="none";
+   },40);
+ },950);
+}
+function openAlbum(){
+ $("#cover").style.transition="1s";$("#cover").style.transform="scale(.94) rotateX(8deg)";$("#cover").style.opacity="0";
+ setTimeout(()=>{$("#cover").style.display="none";$("#album").classList.add("active");$("#nav").style.display="flex";render()},750);
+}
+function editText(){
+ const p=document.querySelector(".page.active");p.classList.toggle("editing");
+ $("#editText").textContent=p.classList.contains("editing")?"✓ Salvar texto":"✎ Editar texto desta página";
+ if(!p.classList.contains("editing")){
+  data.texts[current]=p.querySelector("textarea").value;save();toast("Texto salvo ♥");
+ }
+}
+function addPhoto(){ $("#photoModal").classList.add("open"); $("#settings").classList.remove("open"); }
+function closePhoto(){ $("#photoModal").classList.remove("open");$("#photoInput").value=""; }
+$("#openAlbum").onclick=openAlbum;
+$("#closeAlbumBtn").onclick=closeAlbum;
+$("#prev").onclick=()=>go(current-1);$("#next").onclick=()=>go(current+1);
+$("#homeBtn").onclick=()=>{ $("#album").classList.remove("active");$("#nav").style.display="none";$("#cover").style.display="grid";setTimeout(()=>{$("#cover").style.opacity="1";$("#cover").style.transform="none"},20) };
+$("#settingsBtn").onclick=()=>$("#settings").classList.toggle("open");
+$("#closeSettings").onclick=()=>$("#settings").classList.remove("open");
+$("#editText").onclick=editText;$("#addPhoto").onclick=addPhoto;
+$("#cancelPhoto").onclick=closePhoto;
+$("#savePhoto").onclick=()=>{
+ const f=$("#photoInput").files[0];if(!f){toast("Escolha uma foto primeiro.");return}
+ const reader=new FileReader();
+ reader.onload=e=>{
+   const list=data.photos[current]||[];
+   list.push({src:e.target.result,date:$("#photoDate").value,caption:$("#photoCaption").value});
+   data.photos[current]=list;save();closePhoto();render();toast("Memória adicionada ♥");
+ };
+ reader.readAsDataURL(f);
+};
+pagesEl.addEventListener("click",e=>{
+ const b=e.target.closest(".delete-photo");if(!b)return;
+ const i=+b.dataset.i,j=+b.dataset.j;
+ data.photos[i].splice(j,1);save();render();toast("Foto removida");
+});
+$("#clearData").onclick=()=>{
+ if(confirm("Restaurar os textos originais? As fotos não serão apagadas.")){
+  data.texts={};save();render();toast("Textos restaurados");
+ }
+};
+$("#exportData").onclick=()=>{
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nosso-album-dados.json";a.click();URL.revokeObjectURL(a.href);
+ toast("Dados exportados");
+};
+$("#audioFile").onchange=e=>{
+ const f=e.target.files[0];if(!f)return;
+ if(audio)audio.pause();audio=new Audio(URL.createObjectURL(f));audio.loop=true;audio.volume=.22;
+ audio.play().catch(()=>{});toast("Música ambiente ativada ♫");
+};
+let sx=0,sy=0;
+document.addEventListener("touchstart",e=>{if($("#album").classList.contains("active")){sx=e.changedTouches[0].clientX;sy=e.changedTouches[0].clientY}}, {passive:true});
+document.addEventListener("touchend",e=>{
+ if(!$("#album").classList.contains("active"))return;
+ const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.15)go(current+(dx<0?1:-1));
+},{passive:true});
+document.addEventListener("keydown",e=>{
+ if(e.key==="ArrowRight")go(current+1);if(e.key==="ArrowLeft")go(current-1);
+});
+
+// ===== Interações extras =====
+function floatingHeart(x,y){
+ const h=document.createElement("div");
+ h.className="interact-heart";h.textContent=["♥","♡","✦","✧"][Math.floor(Math.random()*4)];
+ h.style.left=x+"px";h.style.top=y+"px";
+ h.style.setProperty("--dx",(Math.random()*150-75)+"px");
+ h.style.setProperty("--dy",(-70-Math.random()*150)+"px");
+ h.style.setProperty("--rot",(Math.random()*80-40)+"deg");
+ document.body.appendChild(h);setTimeout(()=>h.remove(),1600);
+}
+function sparkle(x,y){
+ for(let i=0;i<7;i++){
+  const s=document.createElement("i");s.className="spark";s.style.left=x+"px";s.style.top=y+"px";
+  s.style.setProperty("--sx",(Math.random()*90-45)+"px");
+  s.style.setProperty("--sy",(Math.random()*90-45)+"px");
+  document.body.appendChild(s);setTimeout(()=>s.remove(),850);
+ }
+}
+document.addEventListener("click",e=>{
+ if(e.target.closest("button,.settings,.modal,input,textarea"))return;
+ if(!$("#album").classList.contains("active"))return;
+ floatingHeart(e.clientX,e.clientY);sparkle(e.clientX,e.clientY);
+});
+let lastTap=0;
+document.addEventListener("touchend",e=>{
+ if(!$("#album").classList.contains("active"))return;
+ const now=Date.now();
+ if(now-lastTap<300){
+   const t=e.changedTouches[0];floatingHeart(t.clientX,t.clientY);floatingHeart(t.clientX+10,t.clientY-5);sparkle(t.clientX,t.clientY);
+ }
+ lastTap=now;
+},{passive:true});
+
+// Inclinação delicada da página no celular ao mover o aparelho/ponteiro.
+document.addEventListener("pointermove",e=>{
+ const p=document.querySelector(".page.active");
+ if(!p || e.pointerType==="touch")return;
+ const r=p.getBoundingClientRect();
+ const rx=((e.clientY-r.top)/r.height-.5)*-2.5;
+ const ry=((e.clientX-r.left)/r.width-.5)*2.5;
+ p.style.transform=`perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+});
+document.addEventListener("pointerleave",()=>{
+ const p=document.querySelector(".page.active");if(p)p.style.transform="";
+});
+
+// Pequena mudança cromática periódica nos detalhes do álbum.
+let hue=0;
+setInterval(()=>{
+ hue=(hue+1)%360;
+ document.documentElement.style.setProperty("--hue",hue+"deg");
+},90);
+
+// Marca o botão de música quando houver áudio.
+const originalAudioHandler=$("#audioFile").onchange;
+$("#audioFile").onchange=e=>{
+ const f=e.target.files[0];if(!f)return;
+ if(audio)audio.pause();
+ audio=new Audio(URL.createObjectURL(f));audio.loop=true;audio.volume=.22;
+ audio.play().catch(()=>{});
+ $("#audioFile").closest(".setting-row").querySelector(".file-label").classList.add("music-pulse");
+ toast("Música ambiente ativada ♫");
+};
+
+particles();$("#nav").style.display="none";
+</script>
+</body>
+</html>
